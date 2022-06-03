@@ -1,0 +1,20 @@
+{
+    "name": "nicolasps/my-blog",
+    "description": "Um blog voltado para o mundo da programação e TI no geral",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Nicolas Souza",
+            "email": "souzanicolas87@gmail.com"
+        }
+    ],
+    "require": {
+        "symfony/var-dumper": "^5.4",
+      "ext-pdo": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    }
+}
