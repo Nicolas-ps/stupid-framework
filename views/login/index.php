@@ -19,5 +19,7 @@
 
         <button type="submit">Login</button>
     </form>
+    <br>
+    <p>Não possui conta? <a href="http://localhost:8080/register">Registre-se</a></p>
 </body>
 </html>

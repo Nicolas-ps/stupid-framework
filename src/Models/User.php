@@ -15,7 +15,7 @@ class User extends Model
      * @var string[] Campos graváveis da tabela
      */
     protected $writable = [
-        'nome',
+        'name',
         'username',
         'password'
     ];
@@ -82,18 +82,31 @@ class User extends Model
     }
 
     /**
-     * @return void
+     * @return bool
      */
     public function insert(array $values)
     {
-        dd(implode(',', $values));
+        $pdo = $GLOBALS['PDO'];
+
         $fields = implode(',', $this->getWritables());
 
-        $sql = "insert into users ($fields) values ()";
+        $sql = "insert into users ($fields) values (";
 
-        foreach ($fields as $key => $field) {
-
+        foreach ($values as $value) {
+            if ($value != end($values)) {
+                $sql .= "'{$value}',";
+            }
         }
 
+        $sql .= "'" . end($values) . "');";
+
+        $statement = $pdo->prepare($sql);
+        $statement->execute();
+
+        if ($statement->rowCount()) {
+            return true;
+        }
+
+        return false;
     }
 }
