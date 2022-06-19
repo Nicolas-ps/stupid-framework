@@ -55,7 +55,7 @@ class User extends Model
         $pdo = $GLOBALS['PDO'];
 
         try {
-            $query = $pdo->query("select username, password from users where username = '{$username}'");
+            $query = $pdo->query("select * from users where username = '{$username}'");
             $result = $query->fetchAll(PDO::FETCH_OBJ);
         } catch (\Throwable $exception) {
             return json_encode([
@@ -67,7 +67,7 @@ class User extends Model
             ]);
         }
 
-        return $result;
+        return reset($result);
     }
 
     /**
@@ -79,34 +79,5 @@ class User extends Model
     public function getUser(array $whereClauses)
     {
 
-    }
-
-    /**
-     * @return bool
-     */
-    public function insert(array $values)
-    {
-        $pdo = $GLOBALS['PDO'];
-
-        $fields = implode(',', $this->getWritables());
-
-        $sql = "insert into users ($fields) values (";
-
-        foreach ($values as $value) {
-            if ($value != end($values)) {
-                $sql .= "'{$value}',";
-            }
-        }
-
-        $sql .= "'" . end($values) . "');";
-
-        $statement = $pdo->prepare($sql);
-        $statement->execute();
-
-        if ($statement->rowCount()) {
-            return true;
-        }
-
-        return false;
     }
 }

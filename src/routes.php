@@ -1,12 +1,13 @@
 <?php
 
+use Src\Controllers\HomeController;
 use Src\Controllers\LoginController;
 
 $routes = [
-    '/' => [LoginController::class, 'index'],
     '/auth' => [LoginController::class, 'auth'],
-    '/register' => [LoginController::class, 'register'],
-    '/signup' => [LoginController::class, 'signup']
+    '/signup' => [LoginController::class, 'signup'],
+    '/logout' => [LoginController::class, 'logout'],
+    '/home' => [HomeController::class, 'index']
 ];
 
 return $routes;
