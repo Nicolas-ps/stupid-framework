@@ -24,7 +24,7 @@ class Model
         foreach ($values as $value) {
             if ($value != end($values)) {
                 if (!is_int($value)) {
-                    $sql .= "{$value},";
+                    $sql .= "'{$value}',";
                     continue;
                 }
 

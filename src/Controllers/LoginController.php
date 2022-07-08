@@ -155,4 +155,14 @@ class LoginController
 
         session_destroy();
     }
+
+    public function root()
+    {
+        echo json_encode([
+            'app'=> 'stupid-mvc',
+            'route' => 'root'
+        ]);
+
+        exit();
+    }
 }
