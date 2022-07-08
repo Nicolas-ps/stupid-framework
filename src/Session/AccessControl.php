@@ -5,7 +5,7 @@ namespace Src\Session;
 use Src\Models\Session;
 use Src\Models\User;
 
-class SessionControl
+class AccessControl
 {
     /**
      * @var string O id da sessão.
@@ -17,27 +17,20 @@ class SessionControl
      */
     public function startSession(): bool
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-            $this->session_id = session_create_id();
+        $this->session_id = session_create_id();
 
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
      * Destrói a sessão e todos os dados que ela contém.
      * @return bool Retorna falso caso não acha sessão ativa.
      */
-    public function destroySession(): bool
+    public function destroySession(int $session_id): bool
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) return false;
+        $sessionModel = new Session();
 
-        $sessionModel = (new Session())->getSessionBySessionId($this->session_id);
-
-        return true;
+        return $sessionModel->deleteById($session_id);
     }
 
     /**
@@ -134,6 +127,24 @@ class SessionControl
             return false;
         }
 
+        return true;
+    }
+
+    /**
+     * Atualiza o token de acesso
+     * @param int $user_id
+     * @return bool
+     */
+    public function refreshToken(int $user_id)
+    {
+        $sessionModel = new Session();
+        $updatedToken = $sessionModel->updateToken($user_id);
+
+        if (!$updatedToken) {
+            return false;
+        }
+
+        $this->session_id = $updatedToken;
         return true;
     }
 }

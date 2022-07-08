@@ -2,12 +2,12 @@
 
 namespace Src\Controllers;
 
-use Src\Session\SessionControl;
+use Src\Session\AccessControl;
 
 class HomeController
 {
     public function index()
     {
-        dd(SessionControl::sessionIsValid($_REQUEST['user_id']));
+        dd(AccessControl::sessionIsValid($_REQUEST['user_id']));
     }
 }
