@@ -2,8 +2,9 @@
 
 namespace Src\Controllers;
 
+use Src\Models\Session;
 use Src\Models\User;
-use Src\Session\SessionControl;
+use Src\Session\AccessControl;
 use Src\Utils\Sanitize;
 use Src\Utils\Validate;
 
@@ -42,17 +43,25 @@ class LoginController
             exit();
         }
 
-        $sessionControl = new SessionControl();
-        $sessionControl->startSession();
-        $sessionControl->set('id', $user->id);
-        $sessionControl->set('username', $user->username);
-        $sessionControl->persistSession($user->id);
+
+        $sessionModel = new Session();
+        $accessControl = new AccessControl();
+        $sessionActive = $sessionModel->getSessionActiveByUser($user->id);
+
+        if (empty($sessionActive)) {
+            $accessControl->startSession();
+            $accessControl->set('id', $user->id);
+            $accessControl->set('username', $user->username);
+            $accessControl->persistSession($user->id);
+        } else {
+            $accessControl->refreshToken($user->id);
+        }
 
         echo json_encode([
             'data' => [
                 'message' => 'Usuário logado!',
-                'access_token' => $sessionControl->getSessionId(),
-                'user_id' =>  $user->id
+                'access_token' => $accessControl->getSessionId(),
+                'user_id' => $user->id
             ],
             'success' => true
         ]);
@@ -126,7 +135,7 @@ class LoginController
             'data' => [
                 'message' => 'O usuário foi registrado!'
             ],
-            'success'=> true
+            'success' => true
         ]);
 
         header('HTTP/1.1 200 OK');
@@ -136,8 +145,14 @@ class LoginController
     public function logout()
     {
         $userId = json_decode(file_get_contents('php://input'))->user_id;
+        $sessionModel = new Session();
 
-        $sessionControl = new SessionControl();
-        $sessionControl->destroySession();
+        $accessControl = new AccessControl();
+        $sessionActive = $sessionModel->getSessionActiveByUser($userId);
+
+        $accessControl = new AccessControl();
+        $accessControl->destroySession($sessionActive->id);
+
+        session_destroy();
     }
 }

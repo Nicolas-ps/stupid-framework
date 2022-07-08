@@ -30,20 +30,37 @@ class Session extends Model
             return $statement->errorInfo();
         }
 
-        return $statement->fetchAll(\PDO::FETCH_OBJ);
+        return reset($statement->fetchAll(\PDO::FETCH_OBJ));
     }
 
     public function getSessionBySessionId(string $session_id)
     {
         $pdo = $GLOBALS['PDO'];
 
-        $sql = "select * from `session` where session_id = :session_id";
+        $sql = "select * from {$this->tableName} s where s.session_id = :session_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(":session_id", $session_id);
+        $stmt->execute();
+        $result = $stmt->fetchAll(\PDO::FETCH_OBJ);
+
+        if (! $result) return false;
+
+        return $result;
+    }
+
+    public function updateToken(int $id): bool|string
+    {
+        $pdo = $GLOBALS['PDO'];
+        $token = session_create_id();
+
+        $sql = "update `session` s set s.session_id = :token where s.user_id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(":token", $token);
+        $stmt->bindParam(":id", $id);
         $result = $stmt->execute();
 
         if (! $result) return false;
 
-        return true;
+        return $token;
     }
 }

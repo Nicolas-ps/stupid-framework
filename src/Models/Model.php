@@ -48,12 +48,12 @@ class Model
     {
         $pdo = $GLOBALS['PDO'];
 
-        $sql = "delete * from `session` where id = :id";
+        $sql = "delete from {$this->tableName} s where s.id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':id', $id);
         $result = $stmt->execute();
 
-        if (! $result) return false;
+        if (!$result) return false;
 
         return true;
     }
