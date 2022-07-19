@@ -7,8 +7,7 @@ $routes = [
     '/' => [LoginController::class, 'root'],
     '/auth' => [LoginController::class, 'auth'],
     '/signup' => [LoginController::class, 'signup'],
-    '/logout' => [LoginController::class, 'logout'],
-    '/home' => [HomeController::class, 'index']
+    '/refresh-token' => [LoginController::class, 'refreshToken'],
 ];
 
 return $routes;

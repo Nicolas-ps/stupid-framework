@@ -2,9 +2,8 @@
 
 namespace Src\Controllers;
 
-use Src\Models\Session;
 use Src\Models\User;
-use Src\Session\AccessControl;
+use Src\Services\TokenService;
 use Src\Utils\Sanitize;
 use Src\Utils\Validate;
 
@@ -31,7 +30,7 @@ class LoginController
 
         $user = $user->getUserByUsername($username);
 
-        if (!password_verify($_REQUEST['password'], $user->password)) {
+        if (!$user || !password_verify($_REQUEST['password'], $user->password)) {
             echo json_encode([
                 'data' => [],
                 'error' => [
@@ -43,24 +42,13 @@ class LoginController
             exit();
         }
 
-
-        $sessionModel = new Session();
-        $accessControl = new AccessControl();
-        $sessionActive = $sessionModel->getSessionActiveByUser($user->id);
-
-        if (empty($sessionActive)) {
-            $accessControl->startSession();
-            $accessControl->set('id', $user->id);
-            $accessControl->set('username', $user->username);
-            $accessControl->persistSession($user->id);
-        } else {
-            $accessControl->refreshToken($user->id);
-        }
+        $tokenService = new TokenService();
+        $accessToken = $tokenService->generateToken($user->name, $user->username);
 
         echo json_encode([
             'data' => [
                 'message' => 'Usuário logado!',
-                'access_token' => $accessControl->getSessionId(),
+                'access_token' => $accessToken,
                 'user_id' => $user->id
             ],
             'success' => true
@@ -117,9 +105,7 @@ class LoginController
 
         $password = password_hash($_REQUEST['password'], PASSWORD_DEFAULT);
 
-        $user = $user->insert([$name, $username, $password]);
-
-        if (!$user) {
+        if (!$user->insert([$name, $username, $password])) {
             echo json_encode([
                 'data' => [],
                 'error' => [
@@ -131,9 +117,15 @@ class LoginController
             exit();
         }
 
+        $user = $user->getUserByUsername($_REQUEST['username']);
+        $accessToken = (new TokenService())->generateToken($user->name, $user->username);
+
         echo json_encode([
             'data' => [
-                'message' => 'O usuário foi registrado!'
+                'message' => 'O usuário foi registrado!',
+                'access_token' => $accessToken,
+                'expires_in' => 1800,
+                'user_id' => $user->id
             ],
             'success' => true
         ]);
@@ -142,18 +134,10 @@ class LoginController
         exit();
     }
 
-    public function logout()
+
+    public function refreshToken()
     {
-        $userId = json_decode(file_get_contents('php://input'))->user_id;
-        $sessionModel = new Session();
-
-        $accessControl = new AccessControl();
-        $sessionActive = $sessionModel->getSessionActiveByUser($userId);
-
-        $accessControl = new AccessControl();
-        $accessControl->destroySession($sessionActive->id);
-
-        session_destroy();
+        dd($_REQUEST);
     }
 
     public function root()

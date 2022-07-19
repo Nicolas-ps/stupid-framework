@@ -1,22 +1,22 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => NULL,
+        'reference' => 'e9c39e0c184f951e4388feb0441e09b61d9df91f',
         'name' => 'nicolasps/my-blog',
         'dev' => true,
     ),
     'versions' => array(
         'nicolasps/my-blog' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => NULL,
+            'reference' => 'e9c39e0c184f951e4388feb0441e09b61d9df91f',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-mbstring' => array(
