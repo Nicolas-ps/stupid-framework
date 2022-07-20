@@ -34,13 +34,53 @@ class TokenService
 
     public function isValid(string $token): bool
     {
-        if (explode('.', $token) != 3) return false;
+        $jwt = explode('.', $token);
 
-        return $this->validateToken($token);
+        if (count($jwt) !== 3) return false;
+
+        return $this->validateToken($jwt);
     }
 
-    private function validateToken (string $token): bool
+    private function validateToken (array $token): bool
     {
-        dd($token);
+        $headerDecoded = base64_decode($token[0]);
+        $payloadDecoded = base64_decode($token[1]);
+
+        $data = [
+            [
+                'value' => $headerDecoded,
+                'type' => 'header'
+            ],
+            [
+                'value' => $payloadDecoded,
+                'type' => 'payload'
+            ]
+        ];
+
+        foreach ($data as $info) {
+            if (! $this->validates($info)) return false;
+        }
+
+        return $payloadDecoded;
+    }
+
+    private function refreshToken () {
+
+    }
+
+    private function validates (array $data) {
+        $conditions = [
+            'IsJson' => function ($data) {
+                if (! (json_decode($data) instanceof \stdClass)) return false;
+
+                return true;
+            }
+        ];
+
+        foreach ($conditions as $condition) {
+            if (! $condition($data)) return false;
+        }
+
+        return true;
     }
 }

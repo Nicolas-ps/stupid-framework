@@ -137,7 +137,8 @@ class LoginController
 
     public function refreshToken()
     {
-        dd($_REQUEST);
+        $tokenService = new TokenService();
+        dd($tokenService->isValid($_REQUEST['token']));
     }
 
     public function root()
