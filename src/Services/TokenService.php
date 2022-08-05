@@ -2,8 +2,29 @@
 
 namespace Src\Services;
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Throwable;
+
 class TokenService
 {
+    public array $supportedAlgs = [
+        'HS256',
+        'HS384',
+        'HS512',
+        'RS256',
+        'RS384',
+        'RS512',
+        'ES256',
+        'ES384',
+        'ES512',
+        'PS256',
+        'PS384',
+        'PS512',
+    ];
+
+    private string $key = '03861321';
+
     public function generateToken(string $name, string $username): string
     {
         $inThirtyMinutes = (new \DateTime('now'))->add(new \DateInterval('PT30M'))
@@ -38,49 +59,10 @@ class TokenService
 
         if (count($jwt) !== 3) return false;
 
-        return $this->validateToken($jwt);
-    }
-
-    private function validateToken (array $token): bool
-    {
-        $headerDecoded = base64_decode($token[0]);
-        $payloadDecoded = base64_decode($token[1]);
-
-        $data = [
-            [
-                'value' => $headerDecoded,
-                'type' => 'header'
-            ],
-            [
-                'value' => $payloadDecoded,
-                'type' => 'payload'
-            ]
-        ];
-
-        foreach ($data as $info) {
-            if (! $this->validates($info)) return false;
+        try {
+            JWT::decode($token, new Key($this->key, 'HS256'));
+        } catch (Throwable $violation) {
+            dd($violation);
         }
-
-        return $payloadDecoded;
-    }
-
-    private function refreshToken () {
-
-    }
-
-    private function validates (array $data) {
-        $conditions = [
-            'IsJson' => function ($data) {
-                if (! (json_decode($data) instanceof \stdClass)) return false;
-
-                return true;
-            }
-        ];
-
-        foreach ($conditions as $condition) {
-            if (! $condition($data)) return false;
-        }
-
-        return true;
     }
 }

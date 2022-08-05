@@ -3,7 +3,7 @@
 if (!function_exists('base64url_encode')) {
     function base64url_encode($data): string
     {
-        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+        return rtrim(strtr(base64_encode($data), '+/', '-'), '=');
     }
 }
 
