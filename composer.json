@@ -1,6 +1,6 @@
 {
     "name": "nicolasps/my-blog",
-    "description": "Um blog voltado para o mundo da programação e TI no geral",
+    "description": "API de login implementando JWT construída com PHP puro e o pacote Firebase/Jwt",
     "type": "project",
     "authors": [
         {
@@ -10,12 +10,18 @@
     ],
     "require": {
         "symfony/var-dumper": "^5.4",
-      "ext-pdo": "*",
-      "ext-json": "*"
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "firebase/php-jwt": "^6.3"
     },
     "autoload": {
         "psr-4": {
             "Src\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "files": [
+            "src/Utils/Helpers/functions.php"
+        ]
     }
 }
